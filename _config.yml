@@ -1,0 +1,17 @@
+# GitHub Pages Configuration
+# This file ensures GitHub Pages serves the site correctly
+
+# Site settings
+title: CaseCraft — Free iPhone Case Maker
+description: Design, customize, and export free iPhone case designs. Upload your own images, use 30+ templates, and download print-ready PNG files. 100% free, no payments.
+baseurl: "/iPhone-case-maker"
+url: "https://mail4samithrangana-hue.github.io"
+
+# Exclude non-site files from build
+exclude:
+  - README.md
+  - "*.sh"
+  - ".agent"
+
+# Plugins (none needed for static site)
+plugins: []

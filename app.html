@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor — CaseCraft iPhone Case Maker</title>
+    <meta name="description"
+        content="Design your custom iPhone case in the CaseCraft editor. Upload images, add text, apply templates, and export print-ready files." />
+    <meta name="robots" content="noindex" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+    <!-- ════════════════════ EDITOR LAYOUT ════════════════════════ -->
+    <div class="editor-layout">
+
+        <!-- ── TOP TOOLBAR ──────────────────────────────────────── -->
+        <header class="editor-toolbar" role="toolbar" aria-label="Editor toolbar">
+            <span class="toolbar-brand">📱 CaseCraft</span>
+            <div class="toolbar-sep"></div>
+
+            <!-- New / Undo / Redo -->
+            <button id="newBtn" class="btn btn-secondary btn-sm" title="New design">＋ New</button>
+            <button id="undoBtn" class="btn btn-secondary btn-sm" title="Undo (Ctrl+Z)" disabled
+                aria-label="Undo">↩️</button>
+            <button id="redoBtn" class="btn btn-secondary btn-sm" title="Redo (Ctrl+Shift+Z)" disabled
+                aria-label="Redo">↪️</button>
+            <div class="toolbar-sep"></div>
+
+            <!-- Model selector -->
+            <div class="model-select-wrap">
+                <label for="modelSelect"
+                    style="flex-direction:row;align-items:center;gap:5px;margin:0;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">📱</label>
+                <select id="modelSelect" aria-label="Select iPhone model"></select>
+                <button id="editPresetBtn" class="btn btn-secondary btn-sm" title="Edit model preset"
+                    aria-label="Edit preset">⚙️</button>
+            </div>
+            <div class="toolbar-sep"></div>
+
+            <!-- Project name -->
+            <input type="text" id="projectNameInput" value="Untitled Design" aria-label="Project name" maxlength="60" />
+            <div class="toolbar-spacer"></div>
+
+            <!-- Autosave -->
+            <span id="autosaveIndicator" aria-live="polite"></span>
+            <div class="toolbar-sep"></div>
+
+            <!-- Theme / Perf -->
+            <button id="themeToggle" class="btn btn-secondary btn-sm" title="Toggle light/dark mode">☀️ Light
+                Mode</button>
+            <button id="perfToggle" class="btn btn-secondary btn-sm" title="Toggle performance mode">⚡ Perf
+                Mode</button>
+            <div class="toolbar-sep"></div>
+
+            <!-- Save / Export -->
+            <button id="saveBtn" class="btn btn-secondary btn-sm" aria-label="Save project">💾 Save</button>
+            <button id="exportBtn" class="btn btn-primary btn-sm" aria-label="Export design">📤 Export</button>
+            <a href="index.html" class="btn btn-secondary btn-sm" aria-label="Back to home">🏠</a>
+        </header>
+
+        <!-- ── UNVERIFIED MODEL WARNING ──────────────────────────── -->
+        <div id="unverifiedBanner" role="alert"></div>
+
+        <!-- ── LEFT PANEL (tools) ───────────────────────────────── -->
+        <aside class="editor-left" role="complementary" aria-label="Design tools">
+
+            <!-- Templates -->
+            <div class="panel-section">
+                <div class="panel-title">📐 <span>Templates</span></div>
+                <div class="panel-body">
+                    <select id="templateQuickSelect" aria-label="Select template" style="margin-bottom:6px;"></select>
+                    <button id="applyTemplateBtn" class="btn btn-secondary" style="width:100%;">Apply Template</button>
+                    <a href="templates.html" target="_blank" class="btn btn-secondary"
+                        style="width:100%;margin-top:5px;font-size:0.78rem;">Browse All →</a>
+                </div>
+            </div>
+
+            <!-- Upload Image -->
+            <div class="panel-section">
+                <div class="panel-title">🖼️ <span>Image</span></div>
+                <div class="panel-body">
+                    <input type="file" id="uploadImageInput" accept="image/png,image/jpeg,image/webp"
+                        style="display:none" aria-label="Upload image" />
+                    <button id="uploadImageBtn" class="btn btn-secondary" style="width:100%;">⬆ Upload Image</button>
+                </div>
+            </div>
+
+            <!-- Text -->
+            <div class="panel-section">
+                <div class="panel-title">✍️ <span>Text</span></div>
+                <div class="panel-body">
+                    <button id="addTextBtn" class="btn btn-secondary" style="width:100%;">＋ Add Text Layer</button>
+                </div>
+            </div>
+
+            <!-- Shapes -->
+            <div class="panel-section">
+                <div class="panel-title">🔷 <span>Shapes</span></div>
+                <div class="panel-body">
+                    <div class="tool-grid">
+                        <button class="tool-btn" data-shape="rect"><span
+                                class="t-icon">▬</span><span>Rect</span></button>
+                        <button class="tool-btn" data-shape="circle"><span
+                                class="t-icon">⬤</span><span>Circle</span></button>
+                        <button class="tool-btn" data-shape="triangle"><span
+                                class="t-icon">▲</span><span>Triangle</span></button>
+                        <button class="tool-btn" data-shape="star"><span
+                                class="t-icon">⭐</span><span>Star</span></button>
+                        <button class="tool-btn" data-shape="heart"><span
+                                class="t-icon">♥</span><span>Heart</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stickers -->
+            <div class="panel-section">
+                <div class="panel-title">😀 <span>Stickers</span></div>
+                <div class="panel-body">
+                    <div class="sticker-grid">
+                        <div class="sticker-wrap"><button data-sticker="🌊" title="Wave"
+                                aria-label="Wave sticker">🌊</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🌙" title="Moon"
+                                aria-label="Moon sticker">🌙</button></div>
+                        <div class="sticker-wrap"><button data-sticker="⭐" title="Star"
+                                aria-label="Star sticker">⭐</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🔥" title="Fire"
+                                aria-label="Fire sticker">🔥</button></div>
+                        <div class="sticker-wrap"><button data-sticker="💎" title="Diamond"
+                                aria-label="Diamond sticker">💎</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🌸" title="Cherry Blossom"
+                                aria-label="Cherry blossom sticker">🌸</button></div>
+                        <div class="sticker-wrap"><button data-sticker="⚡" title="Lightning"
+                                aria-label="Lightning sticker">⚡</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🎮" title="Controller"
+                                aria-label="Game controller sticker">🎮</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🌺" title="Hibiscus"
+                                aria-label="Hibiscus sticker">🌺</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🦋" title="Butterfly"
+                                aria-label="Butterfly sticker">🦋</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🐉" title="Dragon"
+                                aria-label="Dragon sticker">🐉</button></div>
+                        <div class="sticker-wrap"><button data-sticker="👑" title="Crown"
+                                aria-label="Crown sticker">👑</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🍀" title="Clover"
+                                aria-label="Clover sticker">🍀</button></div>
+                        <div class="sticker-wrap"><button data-sticker="🌈" title="Rainbow"
+                                aria-label="Rainbow sticker">🌈</button></div>
+                        <div class="sticker-wrap"><button data-sticker="💫" title="Dizzy"
+                                aria-label="Dizzy star sticker">💫</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div class="panel-section">
+                <div class="panel-title">🎨 <span>Background</span></div>
+                <div class="panel-body">
+                    <label>Solid Color
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <input type="color" id="bgColor" value="#1A1A2E" aria-label="Background color" />
+                            <button id="bgSolidBtn" class="btn btn-secondary btn-sm" style="flex:1;">Apply</button>
+                        </div>
+                    </label>
+                    <label>Gradient
+                        <div class="bg-gradient-row">
+                            <input type="color" id="bgGradColor1" value="#1A1A2E" aria-label="Gradient start color" />
+                            <span style="color:var(--text-muted);">→</span>
+                            <input type="color" id="bgGradColor2" value="#4B0082" aria-label="Gradient end color" />
+                            <input type="number" id="bgGradAngle" value="135" min="0" max="360" style="width:52px;"
+                                aria-label="Gradient angle" />
+                            <button id="bgGradientBtn" class="btn btn-secondary btn-sm">Apply</button>
+                        </div>
+                    </label>
+                    <button id="bgTransparentBtn" class="btn btn-secondary btn-sm"
+                        style="width:100%;margin-bottom:4px;">Transparent (Checkerboard)</button>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Add Background Pattern:
+                    </div>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                        <button class="btn btn-secondary btn-sm" data-bgpattern="grid">Grid</button>
+                        <button class="btn btn-secondary btn-sm" data-bgpattern="dots">Dots</button>
+                        <button class="btn btn-secondary btn-sm" data-bgpattern="stars">Stars</button>
+                        <button class="btn btn-secondary btn-sm" data-bgpattern="waves">Waves</button>
+                        <button class="btn btn-secondary btn-sm" data-bgpattern="circuit">Circuit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overlays -->
+            <div class="panel-section">
+                <div class="panel-title">📏 <span>Overlays</span></div>
+                <div class="panel-body">
+                    <label class="toggle-row">
+                        Safe Area
+                        <input type="checkbox" id="safeAreaToggle" checked aria-label="Show safe area guide" />
+                    </label>
+                    <label class="toggle-row">
+                        Camera Cutout
+                        <input type="checkbox" id="cameraToggle" checked aria-label="Show camera cutout overlay" />
+                    </label>
+                    <label class="toggle-row">
+                        Center Guides
+                        <input type="checkbox" id="guidesToggle" checked aria-label="Show center guides" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- Layers -->
+            <div class="panel-section">
+                <div class="panel-title">📚 <span>Layers</span>
+                    <button id="layerRenameBtn" class="btn-icon" title="Rename selected layer" aria-label="Rename layer"
+                        style="margin-left:auto;">✏️</button>
+                </div>
+                <div class="panel-body">
+                    <div id="layerList" class="layer-list" role="list" aria-label="Layer stack"></div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ── CENTER CANVAS ─────────────────────────────────────── -->
+        <main class="editor-center" role="main" aria-label="Design canvas">
+            <div class="canvas-outer">
+                <div id="canvasWrapper">
+                    <canvas id="editorCanvas" width="400" height="800" aria-label="iPhone case design canvas"
+                        tabindex="0"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <!-- ── RIGHT PANEL (properties) ─────────────────────────── -->
+        <aside class="editor-right" role="complementary" aria-label="Layer Properties">
+            <div class="panel-section">
+                <div class="panel-title">⚙️ Properties</div>
+                <div id="propertiesPanel" style="padding:8px;">
+                    <p class="prop-empty">Select a layer to edit its properties.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ── BOTTOM BAR (zoom + history) ──────────────────────── -->
+        <footer class="editor-bottom" role="contentinfo" aria-label="Zoom and history controls">
+            <div class="zoom-group" role="group" aria-label="Zoom controls">
+                <button id="zoomOut" class="btn btn-secondary btn-sm" aria-label="Zoom out">−</button>
+                <input type="range" id="zoomSlider" min="0.2" max="4" step="0.1" value="1" aria-label="Zoom level" />
+                <button id="zoomIn" class="btn btn-secondary btn-sm" aria-label="Zoom in">＋</button>
+                <button id="zoomFit" class="btn btn-secondary btn-sm" aria-label="Reset zoom">⊞ Fit</button>
+                <span id="zoomValue" aria-live="polite"
+                    style="font-size:0.8rem;color:var(--text-muted);min-width:40px;">100%</span>
+            </div>
+            <div class="toolbar-sep"></div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">
+                Drag: move &nbsp;|&nbsp; Ctrl+Scroll: scale &nbsp;|&nbsp; 🟠 handle: rotate &nbsp;|&nbsp; Del: delete
+                layer
+            </div>
+            <div class="toolbar-spacer"></div>
+            <a href="gallery.html" class="btn btn-secondary btn-sm">🗂 My Designs</a>
+            <a href="help.html" class="btn btn-secondary btn-sm">❓Help</a>
+        </footer>
+
+    </div><!-- end .editor-layout -->
+
+    <!-- ── CONTEXT MENU ──────────────────────────────────────── -->
+    <nav id="contextMenu" aria-label="Canvas context menu" role="menu">
+        <div class="ctx-item" data-ctx="dup" role="menuitem" tabindex="0">📋 Duplicate Layer</div>
+        <div class="ctx-item" data-ctx="center" role="menuitem" tabindex="0">⊕ Center on Canvas</div>
+        <div class="ctx-item" data-ctx="reset-rotation" role="menuitem" tabindex="0">↺ Reset Rotation</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item" data-ctx="delete" role="menuitem" tabindex="0" style="color:var(--danger)">🗑️ Delete
+            Layer</div>
+    </nav>
+
+    <!-- ── SCRIPTS ───────────────────────────────────────────── -->
+    <script src="js/models.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
